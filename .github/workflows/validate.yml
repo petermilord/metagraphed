@@ -27,9 +27,15 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           BASE_REF: ${{ github.base_ref || 'main' }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || '' }}
         run: |
-          git fetch origin "$BASE_REF" --depth=1
-          git diff --name-only "origin/$BASE_REF"...HEAD > changed-files.txt
+          if [ -n "$BASE_SHA" ] && [ -n "$HEAD_SHA" ]; then
+            git diff --name-only "$BASE_SHA" "$HEAD_SHA" > changed-files.txt
+          else
+            git fetch origin "$BASE_REF"
+            git diff --name-only "origin/$BASE_REF"...HEAD > changed-files.txt
+          fi
 
       - name: Capture changed files for full validation
         if: github.event_name != 'pull_request'
@@ -135,15 +141,7 @@ jobs:
 
       - name: Verify submitted public artifacts are reproducible
         if: steps.route.outputs.mode == 'full' && github.event_name == 'pull_request'
-        run: |
-          mapfile -t submitted_artifacts < <(
-            awk '/^public\/metagraph\// { print }' changed-files.txt
-          )
-          if [ "${#submitted_artifacts[@]}" -eq 0 ]; then
-            echo "No submitted public artifacts to verify."
-            exit 0
-          fi
-          git diff --exit-code -- "${submitted_artifacts[@]}"
+        run: node scripts/ci-verify-submitted-artifacts.mjs --changed-files changed-files.txt
 
       - name: Validate registry
         if: steps.route.outputs.mode == 'full'

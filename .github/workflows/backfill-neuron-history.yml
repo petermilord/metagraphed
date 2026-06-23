@@ -64,7 +64,7 @@ jobs:
           DAYS="$DAYS_PER_SHARD"
           END_OFFSET=$(( ${{ matrix.shard }} * DAYS + 1 ))
           echo "shard ${{ matrix.shard }}: --days $DAYS --end-offset $END_OFFSET"
-          uvx --from bittensor==10.4.0 --with xxhash python scripts/backfill-neuron-history.py \
+          uvx --from bittensor==10.4.0 --with xxhash==3.5.0 python scripts/backfill-neuron-history.py \
             --days "$DAYS" --end-offset "$END_OFFSET"
 
   notify-on-failure:

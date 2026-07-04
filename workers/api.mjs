@@ -112,6 +112,7 @@ import {
   handleAccountCounterparties,
   handleAccountStakeFlow,
   handleAccountSubnets,
+  handleAccountPortfolio,
   handleBlocks,
   handleBlocksSummary,
   handleBlock,
@@ -248,6 +249,7 @@ import {
   ACCOUNT_STAKE_FLOW_PATH_PATTERN,
   ACCOUNT_PATH_PATTERN,
   ACCOUNT_SUBNETS_PATH_PATTERN,
+  ACCOUNT_PORTFOLIO_PATH_PATTERN,
   BLOCK_DETAIL_PATH_PATTERN,
   BLOCK_EXTRINSICS_PATH_PATTERN,
   BLOCK_EVENTS_PATH_PATTERN,
@@ -1611,6 +1613,12 @@ export async function handleRequest(request, env = {}, ctx = {}) {
     if (accountSubnetsMatch) {
       return handleAccountSubnets(request, env, accountSubnetsMatch[1]);
     }
+    const accountPortfolioMatch = ACCOUNT_PORTFOLIO_PATH_PATTERN.exec(
+      resolved.url.pathname,
+    );
+    if (accountPortfolioMatch) {
+      return handleAccountPortfolio(request, env, accountPortfolioMatch[1]);
+    }
     const accountExtrinsicsMatch = ACCOUNT_EXTRINSICS_PATH_PATTERN.exec(
       resolved.url.pathname,
     );
@@ -1907,6 +1915,7 @@ function isMainnetOnlyApiPath(pathname) {
     ACCOUNT_EVENTS_PATH_PATTERN.test(pathname) ||
     ACCOUNT_HISTORY_PATH_PATTERN.test(pathname) ||
     ACCOUNT_SUBNETS_PATH_PATTERN.test(pathname) ||
+    ACCOUNT_PORTFOLIO_PATH_PATTERN.test(pathname) ||
     ACCOUNT_EXTRINSICS_PATH_PATTERN.test(pathname) ||
     ACCOUNT_TRANSFERS_PATH_PATTERN.test(pathname) ||
     ACCOUNT_COUNTERPARTIES_PATH_PATTERN.test(pathname) ||

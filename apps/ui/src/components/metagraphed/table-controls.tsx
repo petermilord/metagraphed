@@ -105,11 +105,13 @@ export function SelectFilter({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="bg-transparent text-ink-strong text-xs rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="rounded bg-paper text-xs text-ink-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <option value="">all</option>
+        <option value="" className="bg-card text-ink-strong">
+          all
+        </option>
         {options.map((o) => (
-          <option key={o.value} value={o.value}>
+          <option key={o.value} value={o.value} className="bg-card text-ink-strong">
             {o.label}
           </option>
         ))}
@@ -140,10 +142,10 @@ export function PageSizeSelect({
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         aria-label="Results per page"
-        className="bg-transparent text-ink-strong text-xs rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-ring min-h-7"
+        className="min-h-7 rounded bg-paper text-xs text-ink-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {options.map((n) => (
-          <option key={n} value={n}>
+          <option key={n} value={n} className="bg-card text-ink-strong">
             {n}
           </option>
         ))}

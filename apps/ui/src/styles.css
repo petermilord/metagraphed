@@ -101,6 +101,8 @@
 
 /* ============ LIGHT (default) — Bone + Ink ============ */
 :root {
+  /* Drive native form controls (select popups, scrollbars) to the light palette. */
+  color-scheme: light;
   --radius: 0.75rem;
 
   --paper: oklch(0.975 0.006 95); /* warm bone */
@@ -176,6 +178,9 @@
 
 /* ============ DARK — Ink + dialed mint ============ */
 .dark {
+  /* Native <select> option lists inherit this — without it, Windows Chrome
+     paints a white popup over light ink text (unreadable). */
+  color-scheme: dark;
   --paper: oklch(0.14 0.003 250);
   --surface: oklch(0.175 0.003 250);
   --surface-2: oklch(0.215 0.004 250);

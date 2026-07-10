@@ -60,9 +60,11 @@ import {
   eventKindCategory,
   eventKindCategoryLabel,
   eventKindLabel,
+  EVENT_KIND_LABELS,
   type EventKindCategory,
 } from "@/lib/metagraphed/event-kinds";
 import { TableState } from "@/components/metagraphed/table-state";
+import { SelectFilter } from "@/components/metagraphed/table-controls";
 import type {
   AccountEvent,
   Endpoint,
@@ -91,6 +93,8 @@ type SearchParams = {
   tab?: string;
   sev?: string;
   uid?: number;
+  /** #3369: subnet on-chain activity kind filter (mirrors accounts `ev_kind`). */
+  ev_kind?: string;
 };
 
 export const Route = createFileRoute("/subnets/$netuid")({
@@ -100,6 +104,7 @@ export const Route = createFileRoute("/subnets/$netuid")({
       tab: typeof s.tab === "string" ? s.tab : undefined,
       sev: typeof s.sev === "string" ? s.sev : undefined,
       uid: Number.isInteger(uidNum) && uidNum >= 0 ? uidNum : undefined,
+      ev_kind: typeof s.ev_kind === "string" && s.ev_kind ? s.ev_kind : undefined,
     };
   },
   parseParams: ({ netuid }) => {
@@ -665,18 +670,39 @@ function StakeFlowScorecard({ netuid }: { netuid: number }) {
   );
 }
 
+const SUBNET_EVENT_KIND_OPTIONS = Object.entries(EVENT_KIND_LABELS).map(([value, label]) => ({
+  value,
+  label,
+}));
+
 function ActivityPanel({ netuid }: { netuid: number }) {
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const setKind = (ev_kind: string | undefined) =>
+    navigate({
+      search: (prev: SearchParams) => ({ ...prev, ev_kind }),
+      resetScroll: false,
+    });
+
   return (
     <SectionAnchor
       id="activity"
       title="On-chain activity"
       subtitle="First-party chain events for this subnet, newest first."
       info="Registrations, stake, weights, axon, delegation, lifecycle, and transfers decoded directly from finney System.Events for recent finalized blocks (the rolling first-party event window) — not Taostats."
+      right={
+        <SelectFilter
+          label="Kind"
+          value={search.ev_kind ?? ""}
+          onChange={(v) => setKind(v || undefined)}
+          options={SUBNET_EVENT_KIND_OPTIONS}
+        />
+      }
     >
       <StakeFlowScorecard netuid={netuid} />
       <QueryErrorBoundary>
         <Suspense fallback={<Skeleton className="h-32 w-full" />}>
-          <ActivityTableLoader netuid={netuid} />
+          <ActivityTableLoader netuid={netuid} kind={search.ev_kind} />
         </Suspense>
       </QueryErrorBoundary>
     </SectionAnchor>
@@ -719,15 +745,19 @@ function EventKindCell({ kind }: { kind: string | null | undefined }) {
   );
 }
 
-function ActivityTableLoader({ netuid }: { netuid: number }) {
-  const { data } = useSuspenseQuery(subnetEventsQuery(netuid));
+function ActivityTableLoader({ netuid, kind }: { netuid: number; kind?: string }) {
+  const { data } = useSuspenseQuery(subnetEventsQuery(netuid, kind));
   const events = (data.data.events ?? []) as AccountEvent[];
   if (events.length === 0) {
     return (
       <TableState
         variant="empty"
-        title="No recent on-chain activity"
-        description="No first-party chain events are indexed for this subnet in the current window — a quiet or newly-added subnet may have none yet. Registrations, stake, weights, delegation, and transfers will appear here as they're decoded."
+        title={kind ? `No ${eventKindLabel(kind)} events` : "No recent on-chain activity"}
+        description={
+          kind
+            ? "Try clearing the kind filter — other event kinds may still be indexed for this subnet in the current window."
+            : "No first-party chain events are indexed for this subnet in the current window — a quiet or newly-added subnet may have none yet. Registrations, stake, weights, delegation, and transfers will appear here as they're decoded."
+        }
         generatedAt={data.meta?.generated_at}
       />
     );

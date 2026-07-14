@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import type { HTMLAttributes } from "react";
-import { ArrowUp, ArrowDown, X, Filter } from "lucide-react";
+import { useId, useState, type HTMLAttributes, type ReactNode } from "react";
+import { ArrowUp, ArrowDown, ChevronDown, X, Filter } from "lucide-react";
 import { classNames } from "@/lib/metagraphed/format";
 
 /**
@@ -239,6 +239,68 @@ export function ResetFiltersButton({ active, onReset }: { active: boolean; onRes
     >
       <X className="size-3" /> Reset filters
     </button>
+  );
+}
+
+/**
+ * Mobile filter disclosure for dense ListShell filter bars (#5323).
+ *
+ * On viewports below `md` the controls collapse behind a single "Filters"
+ * toggle (closed by default) so list data stays above the fold; when open
+ * they lay out as a 2-column grid. On `md+` the wrapper is `display: contents`
+ * so children participate in ListShell's existing flex row unchanged.
+ */
+export function CollapsibleFilters({
+  activeCount = 0,
+  children,
+}: {
+  /** Number of active filter values — shown as a badge on the mobile toggle. */
+  activeCount?: number;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const panelId = useId();
+
+  return (
+    <>
+      <button
+        type="button"
+        className="md:hidden inline-flex items-center gap-1.5 rounded border border-border bg-card px-2.5 py-1.5 text-[11px] font-medium text-ink-strong hover:border-ink/30 min-h-9"
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <Filter className="size-3.5" aria-hidden />
+        Filters
+        {activeCount > 0 ? (
+          <span className="rounded-full bg-accent/15 px-1.5 font-mono text-[10px] tabular-nums text-accent">
+            {activeCount}
+          </span>
+        ) : null}
+        <ChevronDown
+          className={classNames(
+            "size-3.5 text-ink-muted transition-transform",
+            open && "rotate-180",
+          )}
+          aria-hidden
+        />
+      </button>
+      <div
+        id={panelId}
+        className={classNames(
+          // Desktop: unwrap so children join ListShell's flex row.
+          "md:contents",
+          open
+            ? // Mobile open: 2-col grid. Force inputs to fit (SearchInput
+              // defaults to min-w-[180px], which blows out a 2-col cell).
+              "w-full grid grid-cols-2 gap-2 [&_input]:min-w-0 [&_input]:max-w-none [&_input]:w-full [&_input]:flex-none [&>span]:col-span-2 [&>button]:col-span-2 [&>label]:col-span-2"
+            : // Mobile closed: hide the panel entirely.
+              "hidden",
+        )}
+      >
+        {children}
+      </div>
+    </>
   );
 }
 

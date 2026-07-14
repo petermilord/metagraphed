@@ -9,6 +9,7 @@ import { useRefetchInterval } from "@/hooks/use-refetch-interval";
 import { ApiSourceFooter } from "@/components/metagraphed/api-source-footer";
 import { EmptyState, Skeleton } from "@/components/metagraphed/states";
 import {
+  CollapsibleFilters,
   PageSizeSelect,
   ResetFiltersButton,
   SearchInput,
@@ -191,12 +192,12 @@ function ExtrinsicsTable() {
   const rowKey = (x: Extrinsic) =>
     x.extrinsic_hash || `${x.block_number ?? "?"}-${x.extrinsic_index ?? "?"}`;
 
-  const filtersActive = Boolean(
-    search.signer || search.call_module || search.call_function || search.success,
-  );
+  const filterValues = [search.signer, search.call_module, search.call_function, search.success];
+  const activeFilterCount = filterValues.filter(Boolean).length;
+  const filtersActive = activeFilterCount > 0;
 
   const filters = (
-    <>
+    <CollapsibleFilters activeCount={activeFilterCount}>
       <SearchInput
         value={search.signer}
         onChange={(v) => setSearch({ signer: v, offset: 0 })}
@@ -238,7 +239,7 @@ function ExtrinsicsTable() {
           })
         }
       />
-    </>
+    </CollapsibleFilters>
   );
 
   const emptyNode = (

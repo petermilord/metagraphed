@@ -21,6 +21,7 @@ import {
   CopyableCode,
 } from "@jsonbored/ui-kit";
 import {
+  CollapsibleFilters,
   PageSizeSelect,
   ResetFiltersButton,
   SearchInput,
@@ -224,17 +225,19 @@ function BlocksTable() {
   const goPrev = () => setSearch({ offset: Math.max(0, search.offset - search.limit) });
   const goNext = () => setSearch({ offset: search.offset + search.limit });
 
-  const filtersActive = Boolean(
-    search.author ||
-    search.spec_version ||
-    search.block_start ||
-    search.block_end ||
-    search.min_extrinsics ||
+  const filterValues = [
+    search.author,
+    search.spec_version,
+    search.block_start,
+    search.block_end,
+    search.min_extrinsics,
     search.min_events,
-  );
+  ];
+  const activeFilterCount = filterValues.filter(Boolean).length;
+  const filtersActive = activeFilterCount > 0;
 
   const filters = (
-    <>
+    <CollapsibleFilters activeCount={activeFilterCount}>
       <span
         className="font-mono text-[11px] text-ink-muted whitespace-nowrap"
         title="Blocks are listed newest first"
@@ -300,7 +303,7 @@ function BlocksTable() {
           })
         }
       />
-    </>
+    </CollapsibleFilters>
   );
 
   const emptyNode = (

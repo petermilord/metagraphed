@@ -2108,6 +2108,7 @@ function PageHero({
   description,
   actions,
   kpis,
+  dense = false,
   aside,
   caption = "registry / v1",
   className
@@ -2116,7 +2117,8 @@ function PageHero({
     "section",
     {
       className: classNames(
-        "mg-hero-slab relative mb-12 md:mb-16 pt-12 md:pt-20 pb-10 md:pb-14",
+        "mg-hero-slab relative pt-12 md:pt-20",
+        dense ? "mb-4 md:mb-6 pb-0" : "mb-12 md:mb-16 pb-10 md:pb-14",
         className
       ),
       children: [
@@ -2129,18 +2131,36 @@ function PageHero({
             ] }) : null,
             /* @__PURE__ */ jsxRuntime.jsx("h1", { className: "mg-fade-in mg-fade-in-delay-1 mt-4 font-display text-[2.5rem] sm:text-5xl md:text-[3.75rem] font-semibold leading-[1.02] tracking-[-0.025em] text-ink-strong", children: title }),
             description ? /* @__PURE__ */ jsxRuntime.jsx("p", { className: "mg-fade-in mg-fade-in-delay-2 mt-5 max-w-xl text-base md:text-lg text-ink-muted leading-relaxed", children: description }) : null,
-            actions ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "mg-fade-in mg-fade-in-delay-3 mt-6 flex flex-wrap items-center gap-2", children: actions }) : null
+            actions ? /* @__PURE__ */ jsxRuntime.jsx(
+              "div",
+              {
+                className: classNames(
+                  "mg-fade-in mg-fade-in-delay-3 flex flex-wrap items-center gap-2",
+                  dense ? "mt-3" : "mt-6"
+                ),
+                children: actions
+              }
+            ) : null
           ] }),
           aside ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "mg-fade-in mg-fade-in-delay-2 hidden md:block shrink-0", children: aside }) : null
         ] }),
-        kpis && kpis.length > 0 ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "mg-fade-in mg-fade-in-delay-3 mg-kpi-strip mt-12 md:mt-16", children: kpis.map((k) => /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted", children: k.label }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "mt-1.5 flex items-baseline gap-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-display text-2xl md:text-[1.75rem] font-semibold tabular-nums text-ink-strong leading-none tracking-[-0.01em]", children: k.value }),
-            k.hint ? /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-mono text-[11px] text-ink-muted", children: k.hint }) : null
-          ] }),
-          k.chart ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "mt-2.5 -ml-0.5", children: k.chart }) : null
-        ] }, k.label)) }) : null
+        kpis && kpis.length > 0 ? /* @__PURE__ */ jsxRuntime.jsx(
+          "div",
+          {
+            className: classNames(
+              "mg-fade-in mg-fade-in-delay-3 mg-kpi-strip",
+              dense ? "mt-4 md:mt-5" : "mt-12 md:mt-16"
+            ),
+            children: kpis.map((k) => /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted", children: k.label }),
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "mt-1.5 flex items-baseline gap-2", children: [
+                /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-display text-2xl md:text-[1.75rem] font-semibold tabular-nums text-ink-strong leading-none tracking-[-0.01em]", children: k.value }),
+                k.hint ? /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-mono text-[11px] text-ink-muted", children: k.hint }) : null
+              ] }),
+              k.chart ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "mt-2.5 -ml-0.5", children: k.chart }) : null
+            ] }, k.label))
+          }
+        ) : null
       ]
     }
   );

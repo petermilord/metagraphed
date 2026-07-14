@@ -17,6 +17,11 @@ interface Props {
   actions?: ReactNode;
   /** Hairline KPI strip rendered below the hero copy. */
   kpis?: KpiItem[];
+  /**
+   * Tighter spacing above the KPI strip and below the hero — for form/utility
+   * pages that flow straight into content (vs dashboard heroes with charts).
+   */
+  dense?: boolean;
   /** Optional right-side slot (chart, illustration). */
   aside?: ReactNode;
   /** Top-right mono caption (defaults to "registry / v1"). */
@@ -36,6 +41,7 @@ export function PageHero({
   description,
   actions,
   kpis,
+  dense = false,
   aside,
   caption = "registry / v1",
   className,
@@ -43,7 +49,8 @@ export function PageHero({
   return (
     <section
       className={classNames(
-        "mg-hero-slab relative mb-12 md:mb-16 pt-12 md:pt-20 pb-10 md:pb-14",
+        "mg-hero-slab relative pt-12 md:pt-20",
+        dense ? "mb-4 md:mb-6 pb-0" : "mb-12 md:mb-16 pb-10 md:pb-14",
         className,
       )}
     >
@@ -69,7 +76,12 @@ export function PageHero({
             </p>
           ) : null}
           {actions ? (
-            <div className="mg-fade-in mg-fade-in-delay-3 mt-6 flex flex-wrap items-center gap-2">
+            <div
+              className={classNames(
+                "mg-fade-in mg-fade-in-delay-3 flex flex-wrap items-center gap-2",
+                dense ? "mt-3" : "mt-6",
+              )}
+            >
               {actions}
             </div>
           ) : null}
@@ -82,7 +94,12 @@ export function PageHero({
       </div>
 
       {kpis && kpis.length > 0 ? (
-        <div className="mg-fade-in mg-fade-in-delay-3 mg-kpi-strip mt-12 md:mt-16">
+        <div
+          className={classNames(
+            "mg-fade-in mg-fade-in-delay-3 mg-kpi-strip",
+            dense ? "mt-4 md:mt-5" : "mt-12 md:mt-16",
+          )}
+        >
           {kpis.map((k) => (
             <div key={k.label}>
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted">

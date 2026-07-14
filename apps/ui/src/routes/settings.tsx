@@ -22,13 +22,26 @@ export const Route = createFileRoute("/settings")({
   component: SettingsPage,
 });
 
+/**
+ * Utility-page family treatment (#5346): PageHero KPI strip only, matching
+ * sibling routes (`/schemas`, `/health`, …). Forms below stay unchanged.
+ * dense — form page; skip Share row so the strip sits closer to the title.
+ */
 function SettingsPage() {
   return (
     <AppShell>
       <PageHero
-        eyebrow="Developer"
+        dense
+        eyebrow="Operations"
         title="Developer settings"
-        description="Self-service webhook subscription management against the public subscription API. Nothing here is stored server-side beyond the subscription record itself — there is no account model."
+        description="Webhook subscription API — create, look up, delete. Token-gated; no account model."
+        caption="settings / v1"
+        kpis={[
+          { label: "Create", value: "POST", hint: "token" },
+          { label: "Lookup", value: "GET", hint: "by id" },
+          { label: "Delete", value: "DELETE", hint: "secret" },
+          { label: "Accounts", value: "None" },
+        ]}
       />
       <WebhookSubscriptionManager />
       <ApiSourceFooter paths={["/api/v1/webhooks/subscriptions"]} />
